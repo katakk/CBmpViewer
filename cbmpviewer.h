@@ -138,6 +138,14 @@ pixel_t pal2rgb[256] = {
     {208,208,208},{218,218,218},{228,228,228},{238,238,238},
 };
 
+// 初期化
+static uint16_t sqrtable[195076] = {0}; // 255x255 + 255x255 + 255x255 => 195075
+
+static inline
+void init_sqrt() {
+    int i;
+    for(i = 0; i < 195076; i++) sqrtable[i] = sqrt(i);
+}
 
 // 三次空間から距離を得る
 static inline
@@ -147,7 +155,7 @@ uint32_t distance(uint32_t r0, uint32_t g0, uint32_t b0,
     r = abs(r0 - r1) ;
     g = abs(g0 - g1) ;
     b = abs(b0 - b1) ;
-    return sqrt(r * r + g * g + b * b);
+    return sqrtable[r * r + g * g + b * b];
 }
 
 // RGB から 拡張カラーへの近似色を探す
