@@ -61,6 +61,8 @@ void viewproc(char *filename, uint8_t threshold_r, uint8_t threshold_g, uint8_t 
     struct winsize win; // コンソールサイズ
     consolebmp_t cbmp;
     char *p;
+    
+    init_sqrt();
 
     //TERM=xterm の場合は 256色 (xterm-256color xterm-3gp xterm-r6 ...
     // xterm-256color 指定すると色数落ちるような気がする @teraterm
