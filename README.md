@@ -1,19 +1,19 @@
 #テーブルル引き版
 ##結果
 速度面変化なし
-
+ 
 ###テーブルル引き版
- 2.14s user 0.08s system 99% cpu 2.231 total
- 2.23s user 0.07s system 99% cpu 2.320 total
- 2.16s user 0.04s system 99% cpu 2.207 total
- 2.28s user 0.06s system 99% cpu 2.349 total
-
+ 2.14s user 0.08s system 99% cpu 2.231 total 
+ 2.23s user 0.07s system 99% cpu 2.320 total 
+ 2.16s user 0.04s system 99% cpu 2.207 total 
+ 2.28s user 0.06s system 99% cpu 2.349 total 
+ 
 ###オリジナル
- 2.11s user 0.15s system 99% cpu 2.271 total
- 2.35s user 0.07s system 99% cpu 2.428 total
- 2.16s user 0.03s system 99% cpu 2.212 total
- 2.21s user 0.06s system 99% cpu 2.283 total
-
+ 2.11s user 0.15s system 99% cpu 2.271 total 
+ 2.35s user 0.07s system 99% cpu 2.428 total 
+ 2.16s user 0.03s system 99% cpu 2.212 total 
+ 2.21s user 0.06s system 99% cpu 2.283 total 
+ 
 ##考察
 sqrt自体にキャッシュが効いており、オリジナルと比較して速度向上は無かった
 ソースコード量、ステップ数増大したためpending.
