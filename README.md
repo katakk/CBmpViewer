@@ -1,4 +1,5 @@
-# cimage-viewer
+# cimage-viewer [![Build Status](https://travis-ci.org/katakk/CBmpViewer.svg?branch=master)](https://travis-ci.org/katakk/CBmpViewer) [![codecov.io](https://codecov.io/github/katakk/CBmpViewer/coverage.svg?branch=master)](https://codecov.io/github/katakk/CBmpViewer?branch=master)
+
 
 cimage-viewer (しめじビューワー) はコンソール上で BMP 画像を (無理矢理) 表示するプログラム。
 とりあえず作ったものなのでごくわずかのフォーマットにしか対応していない。

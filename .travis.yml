@@ -1,0 +1,22 @@
+language: c
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "U/MqOv6bETvgQOzAMMMSxt7f/9mXAhruUAqmeKrJCUcn1iBXRrpPiEur42m/rMM9jvBSQSdZZV6PjZe/Eukzlyw0SVSGIVimsvYoyjW6zmRtod9ueFzbQ1Eu3w1dxo9DsA/4F+2MnhVzwqw9tWWckFgOBH7IH4nfr4poVsFMzHiyFPOx8OndNs4stMg7l/mnK25Mojs0jg0gIQ4Zpz9foKGGhnbj486sivkl/2Ltpfi/JQSHNu+iMQvJATZu1rZ+BZTFPk1t3mR66Ff/mDf+i3JFNiWOLXXC1ysU/iNrAZz9pA/CoAIb3rUrRbCkVfNz1m5rHOJhyxFv3nXX+ecjlmzqDAjLT3rTgWCWbvE9I7BoEhAQKj6cUafv6ZARgUgNXJiU7z+iMfvuIaAOrEbQKyaeJSnyV/Pr/lT8k5qQtoE/tF3e+4G+DWbiV0SslvJV+02K3tWtuz+gR1wJ5p+zXggleJ+YISbIn9vRhZxXLHAo5RbewZmzxonFoKdtf43oKWNfRUAKAfoQ+oenarN3wsrEHBPc6ly1q/1z+1W4+gb6swd0O8F9othGLwwUF8qu8o8ciZOaw285TckXoLmEbqPacVltrRbeet+B63dh9qrYhNnyPwjxEcQnWqJY5LRF5tCeBJUGmmXn5Gy1bH1Y08kq1Gy2wQijDpJ/6UxQtjc="
+
+before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  coverity_scan:
+    project:
+      name: "katakk/CBmpViewer"
+      description: "Build submitted via Travis CI"
+    build_command_prepend: "./configure; make clean"
+    build_command:   "make -j 4"
+    branch_pattern: coverity_scan
+    
+    
+script:
+  - make -j 4
