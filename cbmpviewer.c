@@ -275,6 +275,7 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
     // カラーコード rgb = 000:black 001:blue 010:green 011:cyan 100:red 101:magenta 110:yellow 111:white
     char clrcode[8] = {'0', '4', '2', '6', '1', '5', '3', '7'};
     uint32_t i, j, m, n;
+    int32_t tr = -1, tg = -1, tb = -1, tclr = -1;
 
     // BUG: ここのforループはbmpのpixelがletterの倍数になっていることを前提としちゃってるから
     //      そうじゃないときにメモリのおかしなところ参照しちゃってセグフォル
@@ -300,14 +301,24 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             b = b / s;
             if(color256)
             {
-                if(fullcolor) {
-                    // 拡張 2
-                    printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
+               if(fullcolor) {
+	                    // 拡張 2
+					if(tr == -1) tr = r;
+					if(tg == -1) tg = g;
+					if(tb == -1) tb = b;
+		             if( tr == r && tg == g && tb == b )
+		                printf("\x1b[39m\x1b[49m "); // 透過
+		             else
+     	             printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
                 }
                 else {
                     // 拡張 5;
                     clr = near(r,g,b);
-                    printf("\x1b[0;48;5;%um ", clr);
+					if(tclr == -1) tclr = clr;
+		             if( tclr == clr )
+		                printf("\x1b[39m\x1b[49m "); // 透過
+		             else
+		             	printf("\x1b[0;48;5;%um ", clr);
                 }
             }
             else
