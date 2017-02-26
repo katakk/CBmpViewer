@@ -25,7 +25,7 @@ $ TERM=xterm COLUMNS=120 ./cbmpviewer ikamusume_sq.bmp | tee ikamusume_sq.txt
 ```
 
 ```
-$ TERM=xterm COLUMNS=500 SHIFTX=70 SHIFTXE=200 HEAD=80 ./cbmpviewer ../o0270057013580469695.bmp
+$ TERM=xterm COLUMNS=200 SHIFTX=20 SHIFTXE=200  ./cbmpviewer ../o0270057013580469695.bmp
 ```
 
 パイプも使用可能。  
