@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <math.h>
+#include <limits.h>
 #include "cbmpviewer.h"
 
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
@@ -276,6 +277,20 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
     char clrcode[8] = {'0', '4', '2', '6', '1', '5', '3', '7'};
     uint32_t i, j, m, n;
     int32_t tr = -1, tg = -1, tb = -1, tclr = -1;
+    char *p;
+    int def = 0;
+    int env_shiftx = 0;
+    int env_head = INT_MAX;
+    int env_shiftxe = INT_MAX;
+    if ((p = getenv("SHIFTX")) != NULL && *p != '\0') {
+		env_shiftx = atoi(p);
+	}
+    if ((p = getenv("SHIFTXE")) != NULL && *p != '\0') {
+		env_shiftxe = atoi(p);
+	}
+    if ((p = getenv("HEAD")) != NULL && *p != '\0') {
+		env_head = atoi(p);
+	}
 
     // BUG: ここのforループはbmpのpixelがletterの倍数になっていることを前提としちゃってるから
     //      そうじゃないときにメモリのおかしなところ参照しちゃってセグフォル
@@ -299,6 +314,8 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             r = r / s;
             g = g / s;
             b = b / s;
+            if(env_shiftx>j) continue;
+            if(env_shiftxe<j) continue;
             if(color256)
             {
                if(fullcolor) {
@@ -306,19 +323,32 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
 					if(tr == -1) tr = r;
 					if(tg == -1) tg = g;
 					if(tb == -1) tb = b;
-		             if( tr == r && tg == g && tb == b )
-		                printf("\x1b[39m\x1b[49m "); // 透過
-		             else
+		             if( tr == r && tg == g && tb == b ) {
+			            if( def ) { 
+							printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
+							def = 0;
+						}
+		                printf(" "); // 透過
+		            }  else {
      	             printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
+     	             def=1;
+     	            }
                 }
                 else {
                     // 拡張 5;
                     clr = near(r,g,b);
 					if(tclr == -1) tclr = clr;
-		             if( tclr == clr )
-		                printf("\x1b[39m\x1b[49m "); // 透過
-		             else
+		             if( tclr == clr ) {
+			            if( def ) { 
+							printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
+							def = 0;
+						}
+		                printf(" "); // 透過
+		            }
+		             else {
 		             	printf("\x1b[0;48;5;%um ", clr);
+	     	             def=1;
+	     	        }
                 }
             }
             else
@@ -328,11 +358,25 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
                 g = (g < cbmp->threshold_g) ? 0 : 1;
                 b = (b < cbmp->threshold_b) ? 0 : 1;
                 clr = (r << 2) + (g << 1) + b;
+                
+					if(tclr == -1) tclr = clr;
+		             if( tclr == clr ) {
+			            if( def ) { 
+							printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
+							def = 0;
+						}
+		                printf(" "); // 透過
+		            }
+		             else {
                 printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
+                def=1;
+					}                
+                
             }
         }
         printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
         printf("\n");
+        if(env_head<i) break;
     }
 }
 
