@@ -325,59 +325,38 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             r = r / s;
             g = g / s;
             b = b / s;
+            
+            // シフト処理
             if(env_shiftx>j) continue;
             if(env_shiftxe<j) continue;
-            if(color256)
-            {
-               if(fullcolor) {
-	                    // 拡張 2
-		             if( alp ) {
-			            if( def ) { 
-							printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-							def = 0;
-						}
-		                printf(" "); // 透過
-		            }  else {
-     	             printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
-     	             def=1;
-     	            }
-                }
-                else {
-                    // 拡張 5;
-                    clr = near(r,g,b);
-		             if( alp ) {
-			            if( def ) { 
-							printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-							def = 0;
-						}
-		                printf(" "); // 透過
-		            }
-		             else {
-		             	printf("\x1b[0;48;5;%um ", clr);
-	     	             def=1;
-	     	        }
-                }
-            }
-            else
-            {
-                // RGB各値を2bit化して、RGBを3bit(8通り)で表す
-                r = (r < cbmp->threshold_r) ? 0 : 1;
-                g = (g < cbmp->threshold_g) ? 0 : 1;
-                b = (b < cbmp->threshold_b) ? 0 : 1;
-                clr = (r << 2) + (g << 1) + b;
-                
-		             if( alp ) {
-			            if( def ) { 
-							printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-							def = 0;
-						}
-		                printf(" "); // 透過
-		            }
-		             else {
-                printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
-                def=1;
-					}                
-                
+            
+            // 透過処理
+			if( alp ) {
+				if( def ) { 
+					printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
+					def = 0;
+				}
+				printf(" "); // 透過            
+			} else {
+				if(color256)
+				{
+					if(fullcolor) {
+						// 拡張 2
+						printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
+					} else {
+						// 拡張 5;
+						clr = near(r,g,b);
+						printf("\x1b[0;48;5;%um ", clr);
+					}
+                } else {
+					// RGB各値を2bit化して、RGBを3bit(8通り)で表す
+					r = (r < cbmp->threshold_r) ? 0 : 1;
+					g = (g < cbmp->threshold_g) ? 0 : 1;
+					b = (b < cbmp->threshold_b) ? 0 : 1;
+					clr = (r << 2) + (g << 1) + b;
+					printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
+				}
+				def=1;
             }
         }
         printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
