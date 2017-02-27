@@ -24,6 +24,8 @@ make install は別にしなくてもいい。
 $ TERM=xterm COLUMNS=120 ./cbmpviewer ikamusume_sq.bmp | tee ikamusume_sq.txt
 ```
 
+
+
 ```
 $  TERM=xterm COLUMNS=300 SHIFTX=50 SHIFTXE=200 HEAD=80 TRANSPARENT=1 ./cbmpviewer ../o0270057013580469695.bmp
 ```
@@ -31,6 +33,10 @@ $  TERM=xterm COLUMNS=300 SHIFTX=50 SHIFTXE=200 HEAD=80 TRANSPARENT=1 ./cbmpview
 パイプも使用可能。  
 環境変数 COLUMNS にて横幅設定　デフォルトで 80  
 環境変数 TERM が xterm なのは 256 色にするため必須　大抵の場合は xterm になっている  
+SHIFTX 左トリム
+SHIFTXE 右トリム
+HEAD 上トリム
+TRANSPARENT=1 透過処理有効
 
 ffmpeg が入っている環境下であれば下記が可能:
 
