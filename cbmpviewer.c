@@ -22,8 +22,10 @@
 #define debug(...)
 #endif /* DEBUG */
 
-int color256 = 0;
-int fullcolor = 0;
+int env_triml = 0;
+int env_trimr = INT_MAX;
+int env_head = INT_MAX;
+int env_alp = 0;
 
 // メイン関数
 int main(int argc, char *argv[]) {
@@ -52,6 +54,36 @@ void usage(void) {
     printf("Usage: `cbmpviewer <input.bmp> [threshold_r=128 threshold_g=128 threshold_b=128]`\n");
 }
 
+// 色変換と出力関数
+void fn_fullcolor(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
+{
+	// 拡張 2
+	printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
+}
+
+void fn_256color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
+{
+	// 拡張 5;
+	uint8_t clr;
+	clr = near(r,g,b);
+	printf("\x1b[0;48;5;%um ", clr);
+}
+
+void fn_16color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
+{
+    // カラーコード rgb = 000:black 001:blue 010:green 011:cyan 100:red 101:magenta 110:yellow 111:white
+    const char clrcode[8] = {'0', '4', '2', '6', '1', '5', '3', '7'};
+	uint8_t clr;
+	// RGB各値を2bit化して、RGBを3bit(8通り)で表す
+	r = (r < cbmp->threshold_r) ? 0 : 1;
+	g = (g < cbmp->threshold_g) ? 0 : 1;
+	b = (b < cbmp->threshold_b) ? 0 : 1;
+	clr = (r << 2) + (g << 1) + b;
+	printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
+}
+
+void (*gfn_putcolor)(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b);
+
 // Viewプロシージャ
 void viewproc(char *filename, uint8_t threshold_r, uint8_t threshold_g, uint8_t threshold_b) {
     FILE *fp;
@@ -66,14 +98,29 @@ void viewproc(char *filename, uint8_t threshold_r, uint8_t threshold_g, uint8_t 
     //TERM=xterm の場合は 256色 (xterm-256color xterm-3gp xterm-r6 ...
     // xterm-256color 指定すると色数落ちるような気がする @teraterm
     if ((p = getenv("TERM")) != NULL && *p != '\0' && strncasecmp(p, "xterm", strlen("xterm")) == 0)
-        color256 = 1;
+        gfn_putcolor = fn_256color;
     if ((p = getenv("t_Co")) != NULL && *p != '\0')
     {
         i = atoi(p);
-        if(i == 8) color256 = 0;
-        else if(i == 256) color256 = 1;
-        else if(i == 16777216) fullcolor =1;
+        if(i == 8) gfn_putcolor = fn_16color;
+        else if(i == 256) gfn_putcolor = fn_256color;
+        else if(i == 16777216) gfn_putcolor = fn_fullcolor;
     }
+
+
+    if ((p = getenv("TRIML")) != NULL && *p != '\0') {
+		env_triml = atoi(p);
+	}
+    if ((p = getenv("TRIMR")) != NULL && *p != '\0') {
+		env_trimr = atoi(p);
+	}
+    if ((p = getenv("HEAD")) != NULL && *p != '\0') {
+		env_head = atoi(p);
+	}
+	if ((p = getenv("TRANSPARENT")) != NULL && *p != '\0') {
+		env_alp = 1;
+	}
+
 
     // 画像ファイルオープン
     if ((fp = fopen(filename, "rb")) == NULL) {
@@ -273,32 +320,17 @@ void showbmpdata(pixel_t **pix, int32_t w, int32_t h) {
 
 // 色変換と出力
 void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
-    // カラーコード rgb = 000:black 001:blue 010:green 011:cyan 100:red 101:magenta 110:yellow 111:white
-    char clrcode[8] = {'0', '4', '2', '6', '1', '5', '3', '7'};
     uint32_t i, j, m, n;
     int32_t tr = -1, tg = -1, tb = -1;
     int alp = 0;
     char *p;
     int def = 0;
-    int env_shiftx = 0;
-    int env_head = INT_MAX;
-    int env_shiftxe = INT_MAX;
-    if ((p = getenv("SHIFTX")) != NULL && *p != '\0') {
-		env_shiftx = atoi(p);
-	}
-    if ((p = getenv("SHIFTXE")) != NULL && *p != '\0') {
-		env_shiftxe = atoi(p);
-	}
-    if ((p = getenv("HEAD")) != NULL && *p != '\0') {
-		env_head = atoi(p);
-	}
 
     // BUG: ここのforループはbmpのpixelがletterの倍数になっていることを前提としちゃってるから
     //      そうじゃないときにメモリのおかしなところ参照しちゃってセグフォル
     for (i = 0; i < cbmp->line; i++) {
         for (j = 0; j < cbmp->letter; j++) {
             uint32_t r, g, b, s;
-            uint8_t clr;
 
             // 1文字で表される文のピクセルのRGB値の平均を求める
             // まずはsum
@@ -312,12 +344,12 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             }
             
             // 最初に出てきたビットの色を透過色にする。
-			if ((p = getenv("TRANSPARENT")) != NULL && *p != '\0') {
-				if(tr == -1) tr = r;
-				if(tg == -1) tg = g;
-				if(tb == -1) tb = b;
-				alp = ( tr == r && tg == g && tb == b );
-			}
+            if(env_alp) {
+                if(tr == -1) tr = r;
+                if(tg == -1) tg = g;
+                if(tb == -1) tb = b;
+                alp = ( tr == r && tg == g && tb == b );
+            }
 
             
             // 平均
@@ -327,36 +359,19 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             b = b / s;
             
             // シフト処理
-            if(env_shiftx>j) continue;
-            if(env_shiftxe<j) continue;
+            if(env_triml>j) continue;
+            if(env_trimr<j) continue;
             
             // 透過処理
-			if( alp ) {
-				if( def ) { 
-					printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-					def = 0;
-				}
-				printf(" "); // 透過            
-			} else {
-				if(color256)
-				{
-					if(fullcolor) {
-						// 拡張 2
-						printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
-					} else {
-						// 拡張 5;
-						clr = near(r,g,b);
-						printf("\x1b[0;48;5;%um ", clr);
-					}
-                } else {
-					// RGB各値を2bit化して、RGBを3bit(8通り)で表す
-					r = (r < cbmp->threshold_r) ? 0 : 1;
-					g = (g < cbmp->threshold_g) ? 0 : 1;
-					b = (b < cbmp->threshold_b) ? 0 : 1;
-					clr = (r << 2) + (g << 1) + b;
-					printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
-				}
-				def=1;
+            if( alp ) {
+                if( def ) { 
+                    printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
+                    def = 0;
+                }
+                printf(" "); // 透過            
+            } else {
+                gfn_putcolor(cbmp,r,g,b);
+                def=1;
             }
         }
         printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
@@ -364,4 +379,3 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
         if(env_head<i) break;
     }
 }
-
