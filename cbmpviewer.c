@@ -54,19 +54,28 @@ void usage(void) {
     printf("Usage: `cbmpviewer <input.bmp> [threshold_r=128 threshold_g=128 threshold_b=128]`\n");
 }
 
+#if DEBUG
+const char *tag="0123456789ABCDEF";
+#else
+const char *tag="                ";
+#endif
+int n = 0;
+
 // 色変換と出力関数
 void fn_fullcolor(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 {
+	n++;
 	// 拡張 2
-	printf("\x1b[0;48;2;%2u:%2u:%2um ", r,g,b);
+	printf("\x1b[0;48;2;%2u:%2u:%2um%c", r,g,b, tag[n&0xf]);
 }
 
 void fn_256color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 {
+	n++;
 	// 拡張 5;
 	uint8_t clr;
 	clr = near(r,g,b);
-	printf("\x1b[0;48;5;%um ", clr);
+	printf("\x1b[0;48;5;%um%c", clr, tag[n&0xf]);
 }
 
 void fn_16color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
@@ -323,7 +332,6 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
     uint32_t i, j, m, n;
     int32_t tr = -1, tg = -1, tb = -1;
     int alp = 0;
-    char *p;
     int def = 0;
 
     // BUG: ここのforループはbmpのpixelがletterの倍数になっていることを前提としちゃってるから
@@ -360,7 +368,7 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             
             // シフト処理
             if(env_triml>j) continue;
-            if(env_trimr<j) continue;
+            if((cbmp->letter)<j+env_trimr) continue;
             
             // 透過処理
             if( alp ) {

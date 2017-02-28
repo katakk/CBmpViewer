@@ -27,7 +27,7 @@ $ TERM=xterm COLUMNS=120 ./cbmpviewer ikamusume_sq.bmp | tee ikamusume_sq.txt
 
 
 ```
-$  TERM=xterm COLUMNS=300 TRIML=50 TRIMR=200 HEAD=80 TRANSPARENT=1 ./cbmpviewer ../o0270057013580469695.bmp
+$ TERM=xterm COLUMNS=300 TRIML=40 TRIMR=30 HEAD=270 TRANSPARENT=1 ./cbmpviewer ../風町陽歌（立ち絵）.bmp
 ```
 
 パイプも使用可能。  
