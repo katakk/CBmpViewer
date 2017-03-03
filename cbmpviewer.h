@@ -39,6 +39,15 @@ typedef struct TAG_PIXEL {
     uint8_t blue;
 } pixel_t;
 
+// 連続した色情報は省略する
+typedef struct TAG_OLDCOLOR {
+	int enable;
+	uint32_t r;
+	uint32_t g;
+	uint32_t b;
+	uint8_t clr;
+} oldcolor;
+
 // ConsoleBMP構造体
 typedef struct TAG_CONSOLEBMP {
     uint32_t bpl_c;  // コンソール文字に対するbmpのピクセル比率 col
@@ -48,6 +57,7 @@ typedef struct TAG_CONSOLEBMP {
     uint8_t threshold_r; // しきい値
     uint8_t threshold_g;
     uint8_t threshold_b;
+    oldcolor old;
 } consolebmp_t;
 
 // 関数プロトタイプ宣言

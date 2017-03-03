@@ -23,7 +23,7 @@
 #endif /* DEBUG */
 
 int env_triml = 0;
-int env_trimr = INT_MAX;
+int env_trimr = 0;
 int env_head = INT_MAX;
 int env_alp = 0;
 
@@ -66,7 +66,13 @@ void fn_fullcolor(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 {
 	n++;
 	// 拡張 2
-	printf("\x1b[0;48;2;%2u:%2u:%2um%c", r,g,b, tag[n&0xf]);
+	if(cbmp->old.enable && cbmp->old.r == r && cbmp->old.g == g && cbmp->old.b == b )
+		printf("%c", tag[n&0xf]);
+	else
+		printf("\x1b[0;48;2;%2u:%2u:%2um%c", r,g,b, tag[n&0xf]);
+	cbmp->old.r = r;
+	cbmp->old.g = g;
+	cbmp->old.b = b;
 }
 
 void fn_256color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
@@ -75,7 +81,13 @@ void fn_256color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 	// 拡張 5;
 	uint8_t clr;
 	clr = near(r,g,b);
-	printf("\x1b[0;48;5;%um%c", clr, tag[n&0xf]);
+	
+	if(cbmp->old.enable && cbmp->old.clr == clr)
+		printf("%c", tag[n&0xf]);
+	else
+		printf("\x1b[0;48;5;%um%c", clr, tag[n&0xf]);
+	cbmp->old.clr = clr;
+
 }
 
 void fn_16color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
@@ -88,7 +100,11 @@ void fn_16color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 	g = (g < cbmp->threshold_g) ? 0 : 1;
 	b = (b < cbmp->threshold_b) ? 0 : 1;
 	clr = (r << 2) + (g << 1) + b;
-	printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
+	if(cbmp->old.enable && cbmp->old.clr == clr)
+		printf("%c", tag[n&0xf]);
+	else
+		printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
+	cbmp->old.clr = clr;
 }
 
 void (*gfn_putcolor)(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b);
@@ -332,8 +348,8 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
     uint32_t i, j, m, n;
     int32_t tr = -1, tg = -1, tb = -1;
     int alp = 0;
-    int def = 0;
-
+    
+	cbmp->old.enable = 0;
     // BUG: ここのforループはbmpのpixelがletterの倍数になっていることを前提としちゃってるから
     //      そうじゃないときにメモリのおかしなところ参照しちゃってセグフォル
     for (i = 0; i < cbmp->line; i++) {
@@ -372,18 +388,22 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
             
             // 透過処理
             if( alp ) {
-                if( def ) { 
+                if( cbmp->old.enable ) { 
                     printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-                    def = 0;
+                    cbmp->old.enable = 0;
                 }
                 printf(" "); // 透過            
             } else {
                 gfn_putcolor(cbmp,r,g,b);
-                def=1;
+				cbmp->old.enable = 1;
             }
         }
-        printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-        printf("\n");
+        if( cbmp->old.enable ) { 
+	        printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
+	        printf("\n");
+	        cbmp->old.enable = 0;
+        }
+        
         if(env_head<i) break;
     }
 }
