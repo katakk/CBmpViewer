@@ -1,12 +1,12 @@
 # cimage-viewer [![Build Status](https://travis-ci.org/katakk/CBmpViewer.svg?branch=master)](https://travis-ci.org/katakk/CBmpViewer) [![codecov.io](https://codecov.io/github/katakk/CBmpViewer/coverage.svg?branch=master)](https://codecov.io/github/katakk/CBmpViewer?branch=master) [![coverity](https://scan.coverity.com/projects/11484/badge.svg)](https://scan.coverity.com/projects/katakk-cbmpviewer)
 
-cimage-viewer (しめじビューワー) はコンソール上で BMP 画像を (無理矢理) 表示するプログラム。
-とりあえず作ったものなのでごくわずかのフォーマットにしか対応していない。
-具体的には、Windows Bitmap の無圧縮24ビットで画像データがボトムアップで保存されているビットマップのみ対応。
-コンソールでのエスケープシーケンスでの色表示するのは完全に機種依存だからうまく表示されるかは保証しない。
-もちろん使用色は 256 色になって画素密度は小さくなるので粗い画像 (のようなもの) になる。
-今後、ビットマップ以外の画像 (JPEG、PNG 等) も対応予定である。
+コンソール上で BMP 画像をエスケープシーケンスで表示するプログラム
+Windows Bitmap の無圧縮24ビットで画像データがボトムアップで保存されているビットマップのみ対応
 
+画素密度は小さくなるので粗い画像になる。
+エスケープシーケンスでの色の再現性はターミナルソフトに依存する。
+
+PNGは libpngで対応予定
 
 ## コンパイル・インストール・使い方
 
