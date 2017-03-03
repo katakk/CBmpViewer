@@ -33,10 +33,15 @@ $ TERM=xterm COLUMNS=300 TRIML=40 TRIMR=30 HEAD=270 TRANSPARENT=1 ./cbmpviewer .
 パイプも使用可能。  
 環境変数 COLUMNS にて横幅設定　デフォルトで 80  
 環境変数 TERM が xterm なのは 256 色にするため必須　大抵の場合は xterm になっている  
-TRIML 左トリム桁数
-TRIMR 右トリム桁数
-HEAD 上表示行数
-TRANSPARENT=1 透過処理有効
+
+## 環境変数
+- COLUMNS 横幅設定 デフォルト 80  
+- t_Co 色数強制指定 8 256 16777216 デフォルト指定なし
+- TRIML 左トリム桁数 デフォルト 0
+- TRIMR 右トリム桁数 デフォルト 0
+- HEAD 上表示行数   デフォルト MAX
+- TRANSPARENT=1 透過処理有効  デフォルト 無効
+- NORLE=1 RLE無効化   デフォルト RLE有効
 
 ffmpeg が入っている環境下であれば下記が可能:
 
