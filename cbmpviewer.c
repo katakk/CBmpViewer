@@ -23,7 +23,7 @@
 #endif /* DEBUG */
 
 int env_triml = 0;
-int env_trimr = INT_MAX;
+int env_trimr = 0;
 int env_head = INT_MAX;
 int env_alp = 0;
 
