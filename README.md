@@ -1,10 +1,13 @@
 # cimage-viewer [![Build Status](https://travis-ci.org/katakk/CBmpViewer.svg?branch=master)](https://travis-ci.org/katakk/CBmpViewer) [![codecov.io](https://codecov.io/github/katakk/CBmpViewer/coverage.svg?branch=master)](https://codecov.io/github/katakk/CBmpViewer?branch=master) [![coverity](https://scan.coverity.com/projects/11484/badge.svg)](https://scan.coverity.com/projects/katakk-cbmpviewer)
 
 コンソール上で BMP 画像をエスケープシーケンスで表示するプログラム
-Windows Bitmap の無圧縮24ビットで画像データがボトムアップで保存されているビットマップのみ対応
+
+Windows Bitmap の無圧縮24ビットで画像データがボトムアップで保存されているビットマップのみ対応~
 
 画素密度は小さくなるので粗い画像になる。
+
 エスケープシーケンスでの色の再現性はターミナルソフトに依存する。
+
 
 PNGは libpngで対応予定
 
