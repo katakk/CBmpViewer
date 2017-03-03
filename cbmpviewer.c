@@ -26,6 +26,7 @@ int env_triml = 0;
 int env_trimr = 0;
 int env_head = INT_MAX;
 int env_alp = 0;
+int env_norle = 0;
 
 // メイン関数
 int main(int argc, char *argv[]) {
@@ -66,7 +67,7 @@ void fn_fullcolor(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 {
 	n++;
 	// 拡張 2
-	if(cbmp->old.enable && cbmp->old.r == r && cbmp->old.g == g && cbmp->old.b == b )
+	if(!env_norle && cbmp->old.enable && cbmp->old.r == r && cbmp->old.g == g && cbmp->old.b == b )
 		printf("%c", tag[n&0xf]);
 	else
 		printf("\x1b[0;48;2;%2u:%2u:%2um%c", r,g,b, tag[n&0xf]);
@@ -82,7 +83,7 @@ void fn_256color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 	uint8_t clr;
 	clr = near(r,g,b);
 	
-	if(cbmp->old.enable && cbmp->old.clr == clr)
+	if(!env_norle && cbmp->old.enable && cbmp->old.clr == clr)
 		printf("%c", tag[n&0xf]);
 	else
 		printf("\x1b[0;48;5;%um%c", clr, tag[n&0xf]);
@@ -100,7 +101,7 @@ void fn_16color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 	g = (g < cbmp->threshold_g) ? 0 : 1;
 	b = (b < cbmp->threshold_b) ? 0 : 1;
 	clr = (r << 2) + (g << 1) + b;
-	if(cbmp->old.enable && cbmp->old.clr == clr)
+	if(!env_norle && cbmp->old.enable && cbmp->old.clr == clr)
 		printf("%c", tag[n&0xf]);
 	else
 		printf("\x1b[3%cm\x1b[4%cm%u", clrcode[clr], clrcode[clr], clr);
@@ -145,7 +146,9 @@ void viewproc(char *filename, uint8_t threshold_r, uint8_t threshold_g, uint8_t 
 	if ((p = getenv("TRANSPARENT")) != NULL && *p != '\0') {
 		env_alp = 1;
 	}
-
+	if ((p = getenv("NORLE")) != NULL && *p != '\0') {
+		env_norle = 1;
+	}
 
     // 画像ファイルオープン
     if ((fp = fopen(filename, "rb")) == NULL) {
