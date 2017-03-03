@@ -24,7 +24,7 @@ make install は別にしなくてもいい。
 $ TERM=xterm COLUMNS=120 ./cbmpviewer ikamusume_sq.bmp | tee ikamusume_sq.txt
 ```
 
-
+透過画像として表示するにはTRANSPARENT=1 を指定してください。　透過には　x=0, y=0 の座標の色を透過色とします。SNEG
 
 ```
 $ TERM=xterm COLUMNS=300 TRIML=40 TRIMR=30 HEAD=270 TRANSPARENT=1 ./cbmpviewer ../風町陽歌（立ち絵）.bmp
@@ -52,6 +52,12 @@ $ play "ストライク・ザ・ブラッド　#16.mp4"
 
 動画もサムネイル確認程度ならできるようです (動画は添付されません)。
 
+```
+$ cd /home/foltia/php/tv/4441.localized/mp4
+$ play MHD-4441-2-20170118-0135-27.MP4
+```
+
+すごーい。君はそこまでしてアニメ見たいフレンズなんだね。たーのしー。
 
 ## デモ
 元画像 ikamusume_sq.bmp (のjpg画像)  
