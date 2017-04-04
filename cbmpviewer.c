@@ -403,9 +403,9 @@ void outputbmp(pixel_t **pix, consolebmp_t *cbmp) {
         }
         if( cbmp->old.enable ) { 
 	        printf("\x1b[39m\x1b[49m"); // デフォルトに戻す
-	        printf("\n");
 	        cbmp->old.enable = 0;
         }
+	printf("\n");
         
         if(env_head<i) break;
     }
