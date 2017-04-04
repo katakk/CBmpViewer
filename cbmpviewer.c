@@ -144,10 +144,10 @@ void viewproc(char *filename, uint8_t threshold_r, uint8_t threshold_g, uint8_t 
 		env_head = atoi(p);
 	}
 	if ((p = getenv("TRANSPARENT")) != NULL && *p != '\0') {
-		env_alp = 1;
+		env_alp = atoi(p) ? 1 : 0;
 	}
 	if ((p = getenv("NORLE")) != NULL && *p != '\0') {
-		env_norle = 1;
+		env_norle = atoi(p) ? 1 : 0;
 	}
 
     // 画像ファイルオープン
