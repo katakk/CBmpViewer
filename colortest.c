@@ -75,7 +75,7 @@ int main() {
         g = rainbow[i].green;
         b = rainbow[i].blue;
 
-        clr = near(r,g,b);
+        clr = near_color(r,g,b);
         printf("\x1b[48;5;%um", clr);
         printf("(%3u,%3u,%3u) = %3u  ",r,g,b, clr);
         printf("%s%s%s%s", BD, DF, FDF, BDF);

@@ -162,7 +162,7 @@ uint32_t distance(uint32_t r0, uint32_t g0, uint32_t b0,
 
 // RGB から 拡張カラーへの近似色を探す
 static inline
-uint8_t near(uint32_t r0, uint32_t g0, uint32_t b0) {
+uint8_t near_color(uint32_t r0, uint32_t g0, uint32_t b0) {
     uint32_t dmin = (uint32_t)1000 ;// > 441.672
     uint32_t d[256] = {0};
     uint32_t i;

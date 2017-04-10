@@ -83,7 +83,7 @@ void fn_256color(consolebmp_t *cbmp, uint32_t r, uint32_t g, uint32_t b)
 	n++;
 	// 拡張 5;
 	uint8_t clr;
-	clr = near(r,g,b);
+	clr = near_color(r,g,b);
 	
 	if(!env_norle && cbmp->old.enable && cbmp->old.clr == clr)
 		printf("%c", tag[n&0xf]);
