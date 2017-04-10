@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
 void usage(void) {
     printf("** CBmpViewer **\n");
     printf("Usage: `cbmpviewer <input.bmp> [threshold_r=128 threshold_g=128 threshold_b=128]`\n");
+    printf("Usage: `TERM=<term> COLUMNS=<int> TRIML=<int> TRIMR=<int> HEAD=<int> TRANSPARENT=[0|1] cbmpviewer <input.bmp>`\n");
+    printf(" e.g.: `TERM=xterm COLUMNS=300 TRIML=40 TRIMR=30 HEAD=270 TRANSPARENT=1 cbmpviewer <input.bmp>`\n");
 }
 
 #if DEBUG
