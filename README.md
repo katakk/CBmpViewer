@@ -1,4 +1,4 @@
-# cimage-viewer [![Build Status](https://travis-ci.org/katakk/CBmpViewer.svg?branch=master)](https://travis-ci.org/katakk/CBmpViewer) [![codecov.io](https://codecov.io/github/katakk/CBmpViewer/coverage.svg?branch=master)](https://codecov.io/github/katakk/CBmpViewer?branch=master) [![coverity](https://scan.coverity.com/projects/11484/badge.svg)](https://scan.coverity.com/projects/katakk-cbmpviewer)
+# cimage-viewer [![Build Status](https://travis-ci.org/katakk/CBmpViewer.svg?branch=master)](https://travis-ci.org/katakk/CBmpViewer)
 
 コンソール上で BMP 画像をエスケープシーケンスで表示するプログラム
 
